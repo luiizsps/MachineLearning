@@ -44,7 +44,7 @@ print ('Coefficients: ', regr.coef_)
 print ('Intercept: ',regr.intercept_)
 
 plt.scatter(train.ENGINESIZE, train.CO2EMISSIONS,  color='blue')
-#plt.plot(train_x, regr.coef_[0][0]*train_x + regr.intercept_[0], '-r')
+plt.plot(train_x, regr.coef_[0][0]*train_x + regr.intercept_[0], '-r')
 plt.xlabel("Engine size")
 plt.ylabel("Emission")
 plt.show()
@@ -57,7 +57,7 @@ test_y_ = regr.predict(test_x)
 
 print("Mean absolute error: %.2f" % np.mean(np.absolute(test_y_ - test_y)))
 print("Residual sum of squares (MSE): %.2f" % np.mean((test_y_ - test_y) ** 2))
-print("R2-score: %.2f" % r2_score(test_y , test_y_) )
+print("R2-score: %.2f" % r2_score(test_y , test_y_))
 
 train_x = train[["FUELCONSUMPTION_COMB"]]
 
