@@ -29,4 +29,3 @@ plt.xlabel("Ano")
 
 plt.title("População Brasileira Masculina/Feminina 1950-2019")
 plt.show()
-
