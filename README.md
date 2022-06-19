@@ -1,2 +1,2 @@
 # MachineLearning
-Machine learning archives from coursera
+Machine learning archives from coursera free course
