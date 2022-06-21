@@ -5,12 +5,12 @@ import matplotlib.pyplot as plt
 df = pd.read_csv("FuelConsumptionCo2.csv")
 df = df[['CO2EMISSIONS', 'ENGINESIZE', 'CYLINDERS', 'FUELCONSUMPTION_COMB']]
 
-adf = np.random.rand(len(df)) < 0.85
+adf = np.random.rand(len(df)) < 0.8
 train = df[adf]
 test = df[~adf]
 
-train_x = np.asanyarray(df[['ENGINESIZE', 'CYLINDERS', 'FUELCONSUMPTION_COMB']])
-train_y = np.asanyarray(df[['CO2EMISSIONS']])
+train_x = np.asanyarray(train[['ENGINESIZE', 'CYLINDERS', 'FUELCONSUMPTION_COMB']])
+train_y = np.asanyarray(train[['CO2EMISSIONS']])
 
 from sklearn import linear_model
 
