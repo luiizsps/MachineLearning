@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 df = pd.read_csv("FuelConsumptionCo2.csv")
 df = df[['CO2EMISSIONS', 'ENGINESIZE', 'CYLINDERS', 'FUELCONSUMPTION_COMB']]
 
-adf = np.random.rand(len(df)) < 0.8
+adf = np.random.rand(len(df)) < 0.85
 train = df[adf]
 test = df[~adf]
 
