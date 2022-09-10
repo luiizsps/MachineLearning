@@ -68,4 +68,5 @@ regr = linear_model.LinearRegression()
 regr.fit(train_x, train_y)
 
 predictions = regr.predict(test_x)
+# calcula o erro médio absoluto
 print("Mean Absolute Error: %.2f" % np.mean(np.absolute(predictions - test_y)))
