@@ -3,7 +3,6 @@ import pandas as pd
 import pylab as pl
 import numpy as np
 
-
 df = pd.read_csv("FuelConsumptionCo2.csv")
 df.head()
 df.describe()
