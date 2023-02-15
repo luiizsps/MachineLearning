@@ -1,3 +1,4 @@
+#ex seno
 # Define paths to model files
 import os
 MODELS_DIR = 'models/'
