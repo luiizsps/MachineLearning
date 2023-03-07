@@ -46,7 +46,6 @@ y_values = np.sin(x_values).astype(np.float32)
 plt.plot(x_values, y_values, 'b.')
 plt.show()
 
-# Number of sample datapoints
 SAMPLES = 1000
 
 # Generate a uniformly distributed set of random numbers in the range from
