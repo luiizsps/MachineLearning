@@ -32,5 +32,6 @@ yhat = neigh.predict(X_test)
 yhat[0:5]
 
 from sklearn import metrics
+# Imprime a acuracia do modelo
 print("Train set Accuracy: ", metrics.accuracy_score(y_train, neigh.predict(X_train)))
 print("Test set Accuracy: ", metrics.accuracy_score(y_test, yhat))
