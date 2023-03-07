@@ -28,7 +28,6 @@ seed = 1
 np.random.seed(seed)
 tf.random.set_seed(seed)
 
-# Number of sample datapoints
 SAMPLES = 1000
 
 # Generate a uniformly distributed set of random numbers in the range from
