@@ -91,3 +91,4 @@ plt.plot(x_validate, y_validate, 'y.', label="Validate")
 plt.legend()
 plt.show()
 
+# from tensorflow
