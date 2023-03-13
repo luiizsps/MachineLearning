@@ -42,3 +42,4 @@ model.fit(
     epochs=6,
     validation_data=ds_test,
 )
+ # convert to lite
