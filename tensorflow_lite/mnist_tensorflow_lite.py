@@ -49,7 +49,7 @@ model.compile(optimizer='adam', loss='mse', metrics=['mae'])
 
 history = model.fit(
     ds_train,
-    epochs=300,
+    epochs=7,
     validation_data=ds_test,
 )
 model.save(MODEL_TF)
