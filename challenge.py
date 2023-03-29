@@ -1,25 +1,25 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[565]:
+# In[218]:
 
 
 import pandas as pd
- 
+
 path = r"C:\Users\lsps1\Desktop\Python\Challenge\dataset.csv" 
 df = pd.read_csv(path)
 df.head(4)
 
 
-# In[566]:
-
-
+# In[219]:
+import matplotlib.pyplot as plt
 # Exibe a distribuição dos dados das variáveis depedendentes
 df['Churn'].value_counts().plot.pie(autopct='%.1f')
 df['Churn'].value_counts()
+plt.show()
 
 
-# In[567]:
+# In[220]:
 
 
 # Transforma os dados categóricos do alvo y em dados numéricos
@@ -27,7 +27,7 @@ df['Churn'] = [0 if x == 'No' else 1 for x in df['Churn']]
 df['Churn']
 
 
-# In[568]:
+# In[221]:
 
 
 # Divide o dataset
@@ -37,7 +37,7 @@ df_y = df['Churn']
 df_x.head(5)
 
 
-# In[569]:
+# In[222]:
 
 
 # Função que analisa os dados categóricos
@@ -50,7 +50,7 @@ def catergorias_unicas(df):
 catergorias_unicas(df_x)
 
 
-# In[570]:
+# In[223]:
 
 
 x = df_x['TotalCharges']
@@ -60,7 +60,7 @@ x = pd.to_numeric(x)
 x
 
 
-# In[571]:
+# In[224]:
 
 
 df_x = df_x.drop('TotalCharges', axis=1)
@@ -69,7 +69,7 @@ df_x['TotalCharges'] = x
 df_x['TotalCharges']
 
 
-# In[572]:
+# In[225]:
 
 
 # Transforma os dados categóricos das variáveis indepedentens x em dados numéricos
@@ -86,14 +86,14 @@ df_x = to_dummy(df_x, to_dummy_list)
 df_x.head(5)
 
 
-# In[573]:
+# In[226]:
 
 
 # Verificando se nosso dataset possui dados faltando
 print(df.isnull().sum().sort_values(ascending=False).head())
 
 
-# In[574]:
+# In[227]:
 
 
 # Usando o algoritmo TukeyIQR para identificar outliers
@@ -114,29 +114,52 @@ outlier_indicies, outlier_values = find_ouliers_turkey(df_x['TotalCharges'])
 print(outlier_values)
 
 
-# In[575]:
+# In[228]:
 
 
 outlier_indicies, outlier_values = find_ouliers_turkey(df_x['tenure'])
 print(outlier_values)
+'''
+# ------ FEATURE EXPLORATION ------ #
+from itertools import combinations
+from sklearn.preprocessing import PolynomialFeatures
 
+# Cria interações entre as features
+def add_interactions(df):
+  # define nome das novas features
+  combos = list(combinations(list(df.columns), 2))
+  col_names = list(df.columns) + ['_'.join(x) for x in combos]
 
-# In[576]:
+  # encontra interações
+  poly = PolynomialFeatures(include_bias=False, interaction_only=True)
+  df = poly.fit_transform(df)
+  df = pd.DataFrame(df)
+  df.columns = col_names
+  
+  # remove interações que possuem apenas zeros
+  noint_indicies = [i for i, x in enumerate(list((df == 0).all())) if x]
+  df = df.drop(df.columns[noint_indicies], axis=1)
+  
+  return df
+
+df_x = add_interactions(df_x)
+print(df_x, df_x.shape)
+'''
+# In[229]:
 
 
 # Agora dividimos o dataset em conjuntos de treino, teste e validação.
 from sklearn.model_selection import train_test_split
 
-x_train, x_test, y_train, y_test = train_test_split(df_x, df_y, test_size = 0.30, random_state=5, stratify=df_y)
+x_train, x_test, y_train, y_test = train_test_split(df_x, df_y, test_size = 0.35, random_state=5, stratify=df_y)
 x_test, x_validation, y_test, y_validation = train_test_split(x_test, y_test, test_size=0.5, random_state=2, stratify=y_test)
 
 
-# In[577]:
-
+# In[230]:
 
 import sklearn.feature_selection
 
-select = sklearn.feature_selection.SelectKBest(k=10)
+select = sklearn.feature_selection.SelectKBest(k=20)
 selected_features = select.fit(x_train, y_train)
 indicies_selected = selected_features.get_support(indices=True)
 colnames_selected = [df_x.columns[i] for i in indicies_selected]
@@ -148,29 +171,27 @@ x_validation = x_validation[colnames_selected]
 print(colnames_selected)
 
 
-# In[578]:
+# In[231]:
 
 
 x_train['Churn'] = y_train
 
-import matplotlib.pyplot as plt
-import seaborn 
+import seaborn as sb
 
-seaborn.heatmap(x_train.corr(),
-            annot = True,
-            fmt = '.2f',
+sb.heatmap(x_train.corr(),
             cmap='Blues')
+plt.figure(figsize=(12,8))
 plt.show()
 
 
-# In[579]:
+# In[232]:
 
 
 x_train = x_train.drop('Churn', axis=1)
 x_train
 
 
-# In[580]:
+# In[233]:
 
 
 from sklearn.preprocessing import MinMaxScaler
@@ -180,77 +201,90 @@ scaler = MinMaxScaler()
 scaler.fit(x_train)
 
 
-# In[581]:
+# In[234]:
 
 
 x_train = scaler.transform(x_train)
-# x_test = scaler.transform(x_test)
+x_test = scaler.transform(x_test)
 x_validation = scaler.transform(x_validation)
 
-x_train[0]
+x_train.shape
 
 
-# In[582]:
+# In[235]:
 
 
-from imblearn.under_sampling import RandomUnderSampler
+from imblearn.over_sampling import RandomOverSampler
 
 # lidando com o desbalanceamento de dados no conjunto de treino
-res = RandomUnderSampler(random_state=42)
+res = RandomOverSampler(random_state=42)
 x_train_res, y_train_res = res.fit_resample(x_train, y_train)
 
-
-# In[583]:
-
-
-from sklearn.model_selection import GridSearchCV
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.wrappers.scikit_learn import KerasClassifier
+x_train_res.shape
+# In[236]:
 
 
-# In[584]:
+# Criando modelo
+import tensorflow as tf
+
+model = tf.keras.models.Sequential([
+  tf.keras.layers.Dense(16, input_dim=20, activation='relu'),
+  tf.keras.layers.Dense(16, activation='relu'),
+  tf.keras.layers.Dense(1, activation='sigmoid')
+])
 
 
-def create_model(optimizer='adam'):
-    ann = Sequential()
-    ann.add(Dense(units=6, input_dim=10, activation='relu', kernel_initializer='he_normal'))
-    ann.add(Dense(units=6, activation='relu', kernel_initializer='he_normal'))
-    ann.add(Dense(units=1, activation='sigmoid'))
-    ann.compile(optimizer=optimizer, loss='binary_crossentropy', metrics=['accuracy'])
-    
-    return ann
+# In[237]:
 
 
-# In[585]:
+model.compile(
+    optimizer=tf.keras.optimizers.Adam(),
+    loss=tf.keras.losses.BinaryCrossentropy(),
+    metrics=[tf.keras.metrics.BinaryAccuracy()],
+)
 
 
-# criando modelo
-model = KerasClassifier(build_fn=create_model, verbose=2)
+# In[238]:
 
 
-# In[586]:
+model.fit(
+    x_train_res, 
+    y_train_res,
+    batch_size=32,
+    epochs=100,
+    validation_data=(x_validation, y_validation),
+)
 
+# Retorna acuracia e loss para conjunto de teste
+model.evaluate(x_test, y_test)
 
-# define os parâmetros do grid search
-optimizer = ['SGD', 'Adam']
-batch_size = [32, 64, 128]
-epochs = [40, 50]
-param_grid = dict(optimizer=optimizer, batch_size=batch_size, epochs=epochs)
+# Prevê churn baseado no conjunto de teste
+predictions = model.predict(x_test)
 
-grid = GridSearchCV(estimator=model, param_grid=param_grid, n_jobs=None, cv=5)
-grid_result = grid.fit(x_train, y_train)
+# Tranforma predições em 0 e 1
+prediction_list = []
+for i in predictions:
+    if i>0.5:
+        prediction_list.append(1)
+    else:
+        prediction_list.append(0)
 
+'''
+# cria dataframe
+data = {'actual_churn':y_test, 'predicted_churn':prediction_list}
+df_pred = pd.DataFrame(data)
+df_pred.head(5)
+'''
 
-# In[587]:
+from sklearn.metrics import confusion_matrix, classification_report
 
+#print classification_report
+print(classification_report(y_test, prediction_list))
 
-# exibe resultados do grid search
-print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
-means = grid_result.cv_results_['mean_test_score']
-stds = grid_result.cv_results_['std_test_score']
-params = grid_result.cv_results_['params']
-for mean, stdev, param in zip(means, stds, params):
-    print("%f (%f) with: %r" % (mean, stdev, param))
-
-
+# ploting the confusion metrix plot
+conf_mat = tf.math.confusion_matrix(labels=y_test,predictions=prediction_list)
+plt.figure(figsize = (14,6))
+sb.heatmap(conf_mat, annot=True,fmt='d')
+plt.xlabel('Predicted_churn')
+plt.ylabel('True_churn')
+plt.show()
